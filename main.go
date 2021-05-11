@@ -30,14 +30,40 @@ func main() {
 		templates: template.Must(template.ParseGlob("template/*.html")),
 	}
 	e.Renderer = t
-	e.GET("/hello", helloGet)
-	e.POST("/hello", helloPost)
+	//e.GET("/hello", helloGet)
+	//e.POST("/hello", helloPost)
 
-	e.File("/index.html", "static/index.html")
+	e.GET("/hello", helloGet)
+	e.GET("/index", indexGet)
 
 	e.Logger.Fatal(e.Start(":8000"))
 }
 
+func helloGet(c echo.Context) error {
+	type helloItem struct {
+		Title string
+		Data  []string
+	}
+	item := helloItem{
+		Title: "Hello",
+		Data:  []string{"One", "Two", "Three"},
+	}
+	return c.Render(http.StatusOK, "hello", item)
+}
+
+func indexGet(c echo.Context) error {
+	type indexItem struct {
+		Title   string
+		Message string
+	}
+	item := indexItem{
+		Title:   "Index",
+		Message: "This is top page.",
+	}
+	return c.Render(http.StatusOK, "index", item)
+}
+
+/*
 type helloTemplate struct {
 	Title   string
 	Message string
@@ -87,3 +113,4 @@ func helloPost(c echo.Context) error {
 	}
 	return c.Render(http.StatusOK, "hello", ht)
 }
+*/
