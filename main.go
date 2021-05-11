@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"text/template"
@@ -27,7 +28,8 @@ func main() {
 		templates: template.Must(template.ParseGlob("template/*.html")),
 	}
 	e.Renderer = t
-	e.GET("/hello", hello)
+	e.GET("/hello", helloGet)
+	e.POST("/hello", helloPost)
 
 	e.File("/index.html", "static/index.html")
 
@@ -35,14 +37,24 @@ func main() {
 }
 
 type helloTemplate struct {
-	Title string
-	Items []string
+	Title   string
+	Message string
 }
 
-func hello(c echo.Context) error {
+func helloGet(c echo.Context) error {
 	ht := helloTemplate{
-		Title: "Send values",
-		Items: []string{"One", "Two", "Three"},
+		Title:   "Send values",
+		Message: "type name and password:",
+	}
+	return c.Render(http.StatusOK, "hello", ht)
+}
+
+func helloPost(c echo.Context) error {
+	nm := c.FormValue("name")
+	pw := c.FormValue("password")
+	ht := helloTemplate{
+		Title:   "Send values",
+		Message: fmt.Sprintf("name: %s, password: %s", nm, pw),
 	}
 	return c.Render(http.StatusOK, "hello", ht)
 }
